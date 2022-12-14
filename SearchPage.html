@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet"> 
+    <!-- <link rel="stylesheet" href="menustyle.css"> -->
+    <title>Home</title>
+    <style>
+      *{
+        background: rgb(0, 0, 0);
+      }
+      .h {
+        color:white;
+        text-align: center;
+        background: rgb(0, 0, 0);
+        font-family: 'Noto Nastaliq Urdu', serif;
+      }
+      .h2 {
+        color:white;
+        text-align: center;
+        background: rgb(0, 0, 0);
+        font-family: 'Noto Nastaliq Urdu', serif;
+      }
+      .flex-container {
+        color:white;
+        background-color: rgb(10, 10, 10);
+        font-family: 'Noto Nastaliq Urdu', serif;
+          display: flex;
+        }
+        .card-img-top{
+          color:white;
+          border-radius: 10px;
+        }
+        .flex-container > div {
+        background: rgb(0, 0, 0);
+        color:white;
+        font-family: 'Noto Nastaliq Urdu', serif;
+          border-radius: 10px;
+          margin: 10px;
+          padding: 20px;
+          font-size: 15px;
+          text-align: center;
+        }
+        .btn1{
+        color:white;
+        font-family: 'Noto Nastaliq Urdu', serif;
+          padding: 0px;
+          border-radius: 10px;
+          border: 2px solid black;
+          position: relative;
+          left: 540px;
+          font-size: 1rem;
+          width: 250px;
+          height: 75px;
+          cursor: pointer;
+          font-size: 20px;
+          background-color: rgb(255, 0, 0);
+          text-decoration: none;
+        }
+        .form-check-input{
+          color: red;
+        }
+        #btn_search{
+          height: 30px;
+          width: 100px;
+          color: white;
+          border-radius: 10px;
+          text-align: center;
+          cursor: pointer;
+        }
+        #btn_rcm{
+          height: 50px;
+          width: 250px;
+          color: white;
+          cursor: pointer;
+          border-radius: 10px;
+          text-align: center;
+        }
+        #input_search{
+          height: 30px;
+          width: 700px;
+          position: relative;
+          color: white;
+          border-radius: 10px;
+          text-align: center;
+        }
+        #search_box{
+        background: rgb(0, 0, 0);
+        color: white;
+        border-radius: 10px;
+        font-family: 'Noto Nastaliq Urdu', serif;
+        padding: 10px;
+        margin: 20px;
+        position: relative;
+        text-decoration: none;
+        left: 250px;
+        }
+    </style>
+    <script>
+        const img1 = document.getElementById("fav_img1");
+        const img2 = document.getElementById("fav_img2");
+        const img3 = document.getElementById("fav_img3");
+        const img4 = document.getElementById("fav_img4");
+        const img5 = document.getElementById("fav_img5");
+
+        const t1 = document.getElementById("fav_t1");
+        const t2 = document.getElementById("fav_t2");
+        const t3 = document.getElementById("fav_t3");
+        const t4 = document.getElementById("fav_t4");
+        const t5 = document.getElementById("fav_t5");
+
+        const r1 = document.getElementById("fav_r1");
+        const r2 = document.getElementById("fav_r2");
+        const r3 = document.getElementById("fav_r3");
+        const r4 = document.getElementById("fav_r4");
+        const r5 = document.getElementById("fav_r5");
+
+        let fav_list = [];
+        let rcmstr = '';
+        let user = 'UNKNOWN';
+
+        
+
+      async function callAPI(url){
+        let response = await fetch(url);
+        let data = await response.json();
+        let myList = await data.result;
+        return myList;
+      }
+      function removeItemAll(arr, value) {
+        var i = 0;
+        while (i < arr.length) {
+            if (arr[i] === value) {
+            arr.splice(i, 1);
+            } else {
+            ++i;
+            }
+        }
+        return arr;
+        }
+      
+        async function getTMDB(url){
+        let response = await fetch(url);
+        let data = await response.json();
+        let posterPath = await data.poster_path;
+        let rating = await data.vote_average;
+        let title = await data.original_title;
+        return [posterPath, rating, title];
+      }
+
+      function TMDBPath(id){
+        return "https://api.themoviedb.org/3/movie/" + id +"?api_key=c3f6b9b47294820ea7eea8b3f6f1930a";
+      }
+
+      function updateImage(img, poster){
+        let link = 'https://image.tmdb.org/t/p/w500/' + poster;
+        img.src = link;
+      }
+
+      function updateText(p, newText){
+        p.innerHTML = newText;
+      }
+
+      function updateSearches(list){
+
+      }
+
+      async function updateRecommendations(){
+        
+        rcmstr = fav_list[0];
+        for(var i=1; i<fav_list.length; i++){
+            rcmstr = rcmstr + "%20" + fav_list[i];
+        }
+        console.log()
+        let rcm_list = [];
+        const recom_url = "https://movie-recommender-web-tech.herokuapp.com/recommendations/?options="+ String(rcmstr);
+        const url = "https://web-tech-back-end.herokuapp.com/update_favourites/?username=" + user +"&fav=" + rcmstr;
+
+        rcm_list = await callAPI(url);
+
+      }
+
+      async function updateFavourites(){
+     
+        var inputElements = document.getElementsByClassName('form-check-input');
+        for(var i=0; i<inputElements.length; i++){
+          if(inputElements[i].checked && (fav_list.includes(Number(inputElements[i].value))==false)){
+            fav_list.push(Number(inputElements[i].value));
+            //rcmstr = rcmstr + "%20" + inputElements[i].value;
+          }
+          else if(inputElements[i].checked==false && (fav_list.includes(Number(inputElements[i].value))==true)){
+            fav_list = removeItemAll(fav_list, inputElements[i].value);
+          }
+        }
+
+        rcmstr = fav_list[0];
+        for(var i=1; i< fav_list.length; i++){
+            rcmstr = rcmstr + "%20" + fav_list[i];
+        }
+        console.log(rcmstr);
+        const url = "https://web-tech-back-end.herokuapp.com/update_favourites/?username=" + user +"&fav=" + rcmstr;
+        console.log(url);
+        let response = '';
+        response = await fetch(url);
+        console.log(response);
+
+      }
+      
+      async function load(){
+        //const user = localStorage.getItem("user");
+        user = "smeet";
+
+        const user_welcome = document.getElementById("user_welcome");
+        user_welcome.innerHTML = "Welcome User:   " + user;
+
+        fav_list = await callAPI("https://web-tech-back-end.herokuapp.com/get_favourites/?username="+user);
+
+        rcmstr = fav_list[0];
+        for(var i=1; i< fav_list.length; i++){
+            rcmstr = rcmstr + "%20" + fav_list[i];
+        }
+
+        var inputElements = document.getElementsByClassName('form-check-input');
+        for(var i=0; i<inputElements.length; i++){
+          if(fav_list.includes(Number(inputElements[i].value))){
+            inputElements[i].checked = true;
+          }
+        }       
+
+      }
+
+      async function search(){
+
+        const img1 = document.getElementById("search_img1");
+        const img2 = document.getElementById("search_img2");
+        const img3 = document.getElementById("search_img3");
+        const img4 = document.getElementById("search_img4");
+        const img5 = document.getElementById("search_img5");
+
+        const t1 = document.getElementById("search_t1");
+        const t2 = document.getElementById("search_t2");
+        const t3 = document.getElementById("search_t3");
+        const t4 = document.getElementById("search_t4");
+        const t5 = document.getElementById("search_t5");
+
+        const r1 = document.getElementById("search_r1");
+        const r2 = document.getElementById("search_r2");
+        const r3 = document.getElementById("search_r3");
+        const r4 = document.getElementById("search_r4");
+        const r5 = document.getElementById("search_r5");
+
+
+        
+        const heading_search = document.getElementById("heading_search");
+        heading_search.innerHTML = "Search Results:";
+
+        const input_search = document.getElementById("input_search");
+        var searchQuery = String(input_search.value);
+        searchQuery = searchQuery.replace(" ", "%20");
+        
+        let search_list = [];
+        const get_search_url = 'https://movie-recommender-web-tech.herokuapp.com/search/' + searchQuery;
+        search_list = await callAPI(get_search_url);
+        search_list = search_list.slice(0,5);    
+
+        const res1 = await getTMDB(TMDBPath(search_list[0]));
+        const res2 = await getTMDB(TMDBPath(search_list[1]));
+        const res3 = await getTMDB(TMDBPath(search_list[2]));
+        const res4 = await getTMDB(TMDBPath(search_list[3]));
+        const res5 = await getTMDB(TMDBPath(search_list[4]));
+
+        if(search_list.length==0){
+            alert("No movies found");
+        }
+        if(search_list.length>0){
+            updateImage(img1, res1[0]);
+            updateText(r1, res1[1]+'/10');
+            updateText(t1, res1[2]);
+            if(search_list.length>1){
+                updateImage(img2, res2[0]);
+                updateText(r2, res2[1]+'/10');
+                updateText(t2, res2[2]);
+                if(search_list.length>2){
+                    updateImage(img3, res3[0]);
+                    updateText(r3, res3[1]+'/10');
+                    updateText(t3, res3[2]);
+                    if(search_list.length>3){
+                        updateImage(img4, res4[0]);
+                        updateText(r4, res4[1]+'/10');
+                        updateText(t4, res4[2]);
+                        if(search_list.length>4){
+                            updateImage(img5, res5[0]);
+                            updateText(r5, res5[1]+'/10');
+                            updateText(t5, res5[2]);
+                        }
+                    }
+                }
+            }
+        }   
+        
+        
+        
+        
+      }
+      
+      
+      
+    </script>
+</head>
+<body onload="load();">
+
+  <h2 class="h" id="user_welcome">Welcome User UNKOWN</h2>
+
+  <div id="search_box">
+    <input type="text" id="input_search" placeholder="Search for Movies!">
+    <button id="btn_search" onclick="search()">Search</button>
+  </div>
+  
+
+  <form id="checkform">
+    <h2 class="h2" id="heading_search">Popular Searches:</h2>
+    <div class="flex-container">
+        <div class="card" style="width: 13rem;">
+            <img id="search_img1" class="card-img-top" src="https://image.tmdb.org/t/p/w500//saHP97rTPS5eLmrLQEcANmKrsFl.jpg" width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="search_t1" class="card-text">Forrest Gump</p>
+              <p id="search_r1" class="card-text">8.8/10</p>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Movies[]" class="form-check-input" name="newsletter" id="Movie1" value="13">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="search_img2" class="card-img-top" src="https://image.tmdb.org/t/p/w500//q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="search_t2" class="card-text">Shawshank Redemption</p>
+              <p id="search_r2" class="card-text"> 9.3/10</p>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Movies[]" class="form-check-input" id="Movie2" value="278">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="search_img3" class="card-img-top" src="https://image.tmdb.org/t/p/w500//fIE3lAGcZDV1G6XM5KmuWnNsPp1.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="search_t3" class="card-text">Pulp Fiction</p>
+              <p id="search_r3" class="card-text"> 8.9/10</p>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Movies[]" class="form-check-input" id="Movie3" value="680">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="search_img4" class="card-img-top" src="https://image.tmdb.org/t/p/w500//rplLJ2hPcOQmkFhTqUte0MkEaO2.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+                <p id="search_t4" class="card-text">The Silence of the Lambs</p>
+                <p id="search_r4" class="card-text"> 8.6/10</p>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Movies[]" class="form-check-input" id="Movie4" value="274">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="search_img5" class="card-img-top" src="https://image.tmdb.org/t/p/w500//f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+                <p id="search_t5" class="card-text">The Matrix (1999)</p>
+                <p id="search_r5" class="card-text"> 8.7/10</p>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Movies[]" class="form-check-input" id="Movie5" value="603">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+    </div> 
+
+    <span>
+        <h2 class="h2" id="heading_recom">Your Recommendations:</h2>
+        <button id="btn_rcm" onclick="updateRecommendations()">Refresh Recommendations</button>
+    </span>
+    <div class="flex-container">
+        <div class="card" style="width: 13rem;">
+            <img id="recom_img1" class="card-img-top" src="https://image.tmdb.org/t/p/w500//6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+                <p id="recom_t1"class="card-text">Star Wars: Episode IV - A New Hope</p>
+                <p id="recom_r1"class="card-text"> 8.6/10</p>
+            </div>
+            <div class="form-check">
+                <input id="recom_c1" type="checkbox" name="Movies[]" class="form-check-input" id="Movie6" value="11">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="recom_img2" class="card-img-top" src="https://image.tmdb.org/t/p/w500//b1xCNnyrPebIc7EWNZIa6jhb1Ww.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="recom_t2" class="card-text">Jurassic Park</p>
+              <p id="recom_r2" class="card-text"> 8.2/10</p>
+            </div>
+            <div class="form-check">
+                <input id="recom_c2" type="checkbox" name="Movies[]" class="form-check-input" id="Movie7" value="329">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="recom_img3" class="card-img-top" src="https://image.tmdb.org/t/p/w500//or1gBugydmjToAEq7OZY0owwFk.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+                <p id="recom_t3" class="card-text">Braveheart</p>
+                <p id="recom_r3" class="card-text"> 8.4/10</p>
+            </div>
+            <div class="form-check">
+                <input id="recom_c4" type="checkbox" name="Movies[]" class="form-check-input" id="Movie8" value="197">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="recom_img4" class="card-img-top" src="https://image.tmdb.org/t/p/w500//5M0j0B18abtBI5gi2RhfjjurTqb.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="recom_t4" class="card-text">Terminator 2: Judgment Day</p>
+              <p id="recom_r4" class="card-text"> 8.6/10</p>
+            </div>
+            <div class="form-check">
+                <input id="recom_c4" type="checkbox" name="Movies[]" class="form-check-input" id="Movie9" value="280">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="recom_img5" class="card-img-top" src="https://image.tmdb.org/t/p/w500//sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+                <p id="recom_t5" class="card-text">Schindler's List</p>
+                <p id="recom_r5" class="card-text"> 9/10</p>
+            </div>
+            <div class="form-check">
+                <input id="recom_c5" type="checkbox" name="Movies[]" class="form-check-input" id="Movie10" value="424">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+    </div> 
+
+    <h2 class="h2" id="heading_fav">Your Favorites:</h2>
+    <div class="flex-container">
+        <div class="card" style="width: 13rem;">
+            <img id="fav_img1" class="card-img-top" src="https://image.tmdb.org/t/p/w500//saHP97rTPS5eLmrLQEcANmKrsFl.jpg" width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="fav_t1" class="card-text">Forrest Gump</p>
+              <p id="fav_r1" class="card-text"> 8.8/10</p>
+            </div>
+            <div class="form-check">
+                <input id="fav_c1" type="checkbox" name="Movies[]" class="form-check-input" id="Movie1" value="13">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="fav_img2" class="card-img-top" src="https://image.tmdb.org/t/p/w500//q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="fav_t2" class="card-text">Shawshank Redemption</p>
+              <p id="fav_r2" class="card-text"> 9.3/10</p>
+            </div>
+            <div class="form-check">
+                <input id="fav_c2" type="checkbox" name="Movies[]" class="form-check-input" id="Movie2" value="278">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="fav_img3" class="card-img-top" src="https://image.tmdb.org/t/p/w500//fIE3lAGcZDV1G6XM5KmuWnNsPp1.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+              <p id="fav_t3" class="card-text">Pulp Fiction</p>
+              <p id="fav_r3" class="card-text"> 8.9/10</p>
+            </div>
+            <div class="form-check">
+                <input id="fav_c3" type="checkbox" name="Movies[]" class="form-check-input" id="Movie3" value="680">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="fav_img4" class="card-img-top" src="https://image.tmdb.org/t/p/w500//rplLJ2hPcOQmkFhTqUte0MkEaO2.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+                <p id="fav_t4" class="card-text">The Silence of the Lambs</p>
+                <p id="fav_r4" class="card-text"> 8.6/10</p>
+            </div>
+            <div class="form-check">
+                <input id="fav_c4" type="checkbox" name="Movies[]" class="form-check-input" id="Movie4" value="274">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+        <div class="card" style="width: 13rem;">
+            <img id="fav_img5" class="card-img-top" src="https://image.tmdb.org/t/p/w500//f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg
+            " width="180" alt="Card image cap">
+            <div class="card-body">
+                <p id="fav_t5" class="card-text">The Matrix (1999)</p>
+                <p id="fav_r5" class="card-text"> 8.7/10</p>
+            </div>
+            <div class="form-check">
+                <input id="fav_c5" type="checkbox" name="Movies[]" class="form-check-input" id="Movie5" value="603">
+                <label class="form-check-label" for="exampleCheck1">I like this movie</label>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn1" id="submit_btn" onclick="updateFavourites();">Add to Favourites</button>
+  </form>
+
+
+</body>
+</html>

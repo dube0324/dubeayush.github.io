@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommender</title>
+    <link rel="stylesheet" href="Signin.css">
+    <link rel="stylesheet" href="captcha.css"> <!-- The directory of the CSS file -->
+	<script type="text/javascript" src="captcha.js"></script> <!-- The directory of the JS file -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" src="script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet"> 
+</head>
+<body> 
+    <div class="login">
+        <form name='form-login'>
+    
+            <h1>SIGN IN</h1>
+            <body onLoad="ChangeCaptcha()">
+            <label for="userName">Username</label>
+            <input type="email" id="userName" placeholder="Username" required>
+    
+            <label for="userPw">Password</label>
+            <input type="password" id= "userPw" placeholder="Password" required>
+            <div class="captcha">
+                <label for="captcha-input">Enter Captcha</label>
+                <div class="preview"></div>
+                <div class="captcha-form">
+                    <input type="text" id="randomfield" disabled>
+                  <input type="text" id="captcha-form" maxlength="6" placeholder="Enter captcha text">
+                  <!-- <button class="captcha-refresh">
+                    <i class="fa fa-refresh"></i> -->
+                  </button>
+                  <!-- <button onclick="check()">Done</button> -->
+                </div>
+              </div>
+    
+            <div id="remember">
+                <input type="checkbox" value="lsRememberMe" id="rememberMe"
+                       style="display: inline-block;">
+                <label>Remember me</label>
+            </div>
+    
+            <input id= "login_btn" type="submit" value="Login" onclick="check1(0);check()">
+            <a href="Register.html">Register</a>
+        </form>
+        
+    </div>
+    
+</body>
+</html>
